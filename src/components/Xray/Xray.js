@@ -6,6 +6,8 @@ import Button from '../../UI/Button';
 export default class XRay extends Component{
     constructor(props){
         super(props);
+        //console.log('hi');
+        //console.log('bi');
         this.state = {
             transform: true,
             images: this.props.images,
@@ -40,7 +42,9 @@ export default class XRay extends Component{
                     screen: 575,
                     diameter: 50
                 }
-            ]
+            ],
+            centerX: 0 ,
+            centerY: 0
         };
         this.move = this.move.bind(this);
     }
@@ -82,7 +86,9 @@ export default class XRay extends Component{
         let width = this.firstImg.clientWidth;
         let height = Math.round((width / percent));
         let dim = this.getDiameter();
-
+        //console.log(window.screen.width);
+        let centerX = 0;
+        let centerY = 0;
         let sensor;
 
         if(beyond){
@@ -100,12 +106,16 @@ export default class XRay extends Component{
                 left: 0
             }
         }
+        this.centerY = Math.round(height/2)+Math.round(dim/2);
+        this.centerX = Math.round(width/2)+Math.round(dim/2);
         // console.log(width + ' ' + height + ' ' + dim);
         this.setState({
             width,
             height,
             dim,
-            sensor
+            sensor,
+            centerX,
+            centerY
         });
     };
 
@@ -147,8 +157,10 @@ export default class XRay extends Component{
 
     HoverSensor = (event) => {
 
-        let positionX = event.nativeEvent.layerX;
-        let positionY = event.nativeEvent.layerY;
+        let positionX = event.layerX + this.centerX;
+        let positionY = event.layerY + this.centerY;
+        console.log(positionX + ' ' + event.layerX);
+        console.log(positionY + ' ' + event.layerY);
         let {sensor, dim, beyond} = this.state;
 
         let position = {
@@ -189,6 +201,7 @@ export default class XRay extends Component{
             this.zoom.style.left = `${position.endX - dim - zoomPosition}px`;
             this.lastImg.style.left = `${-position.endX +  dim + zoomPosition}px`;
         }
+        this.setState({centerX:event.layerX,centerY:event.layerY});
        // console.log(this.zoom.style.left + ' xx  ' + positionX + ' endxx' + position.endX);
         //console.log(this.zoom.style.top + ' yy ' + positionY + 'endyy' + position.endY);
     };
@@ -208,7 +221,42 @@ export default class XRay extends Component{
 
         this.HoverSensor(event);
     };
-
+    onLeftPress = () =>{
+        if(this.state.centerX+Math.round(this.state.width/2)<=0)
+        {   return ;
+        }
+        this.move({
+            layerX:this.state.centerX-10,
+            layerY:this.state.centerY
+            });
+    }
+    onRightPress = () =>{
+        if(this.state.centerX >=Math.round(this.state.width/2))
+        {   return ;
+        }
+        this.move({
+            layerX:this.state.centerX+10,
+            layerY:this.state.centerY
+            });
+    }
+    onTopPress = () =>{
+        if(this.state.centerY+Math.round(this.state.height/2)<=0)
+        {   return ;
+        }
+        this.move({
+            layerX:this.state.centerX,
+            layerY:this.state.centerY-10
+            });
+    }
+    onBottomPress = () =>{
+        if(this.state.centerY >=Math.round(this.state.height/2))
+        {   return ;
+        }
+        this.move({
+            layerX:this.state.centerX,
+            layerY:this.state.centerY+10
+            });
+    }
     render(){
         let {
             images,
@@ -233,11 +281,11 @@ export default class XRay extends Component{
                 <img
                     ref={(img)=>{
                         this.firstImg = img;
-                        //console.log(img + "image1");
-                        if(img!=null)
-                        {console.log(this.firstImg.style.top);
-                        console.log(this.firstImg.style.left);
-                        }
+                        //console.log("image1");
+                        //if(img!=null)
+                        // {console.log(this.firstImg.style.top);
+                        // console.log(this.firstImg.style.left);
+                        //}
                     }}
                     src={images[0]}
                     alt="first-photo"
@@ -273,9 +321,9 @@ export default class XRay extends Component{
             </div>
             <div className="Buttons">
                 <Button clicked={this.onLeftPress}>Left</Button>
-                <Button clicked={() => {console.log('Right');}}>Right</Button>
-                <Button clicked={() => {console.log('Bottom');}}>Bottom</Button>
-                <Button clicked={() => {console.log('Top');}}>Top</Button>
+                <Button clicked={this.onRightPress}>Right</Button>
+                <Button clicked={this.onBottomPress}>Bottom</Button>
+                <Button clicked={this.onTopPress}>Top</Button>
             </div>
             </Aux>
         );
