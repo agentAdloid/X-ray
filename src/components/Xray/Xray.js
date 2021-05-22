@@ -51,7 +51,7 @@ export default class XRay extends Component{
 
     componentDidMount = () =>{
         this.updateWidthHeight();
-        window.addEventListener('resize', this.updateWidthHeight)
+        window.addEventListener('resize', this.updateWidthHeight);
     };
 
     /**
@@ -83,6 +83,7 @@ export default class XRay extends Component{
         let naturalWidth = this.firstImg.naturalWidth;
         let naturalHeight = this.firstImg.naturalHeight;
         let percent = naturalWidth / naturalHeight;
+        percent = 1.61;
         let width = this.firstImg.clientWidth;
         let height = Math.round((width / percent));
         let dim = this.getDiameter();
@@ -90,7 +91,6 @@ export default class XRay extends Component{
         let centerX = 0;
         let centerY = 0;
         let sensor;
-
         if(beyond){
             sensor = {
                 width: width + dim,
@@ -106,8 +106,9 @@ export default class XRay extends Component{
                 left: 0
             }
         }
-        this.centerY = Math.round(height/2)+Math.round(dim/2);
-        this.centerX = Math.round(width/2)+Math.round(dim/2);
+        centerY = Math.round(height/2)+Math.round(dim/2);
+        centerX = Math.round(width/2)+Math.round(dim/2);
+        console.log(centerX + " cc " + centerY + percent);
         // console.log(width + ' ' + height + ' ' + dim);
         this.setState({
             width,
@@ -157,10 +158,10 @@ export default class XRay extends Component{
 
     HoverSensor = (event) => {
 
-        let positionX = event.layerX + this.centerX;
-        let positionY = event.layerY + this.centerY;
-        console.log(positionX + ' ' + event.layerX);
-        console.log(positionY + ' ' + event.layerY);
+        let positionX = event.layerX ;
+        let positionY = event.layerY ;
+        console.log("x" + event.layerX);
+        console.log("y" + event.layerY);
         let {sensor, dim, beyond} = this.state;
 
         let position = {
@@ -222,7 +223,7 @@ export default class XRay extends Component{
         this.HoverSensor(event);
     };
     onLeftPress = () =>{
-        if(this.state.centerX+Math.round(this.state.width/2)<=0)
+        if(this.state.centerX+Math.round(this.state.dim/2)<=0)
         {   return ;
         }
         this.move({
@@ -231,7 +232,7 @@ export default class XRay extends Component{
             });
     }
     onRightPress = () =>{
-        if(this.state.centerX >=Math.round(this.state.width/2))
+        if(this.state.centerX >=Math.round(this.state.width)+Math.round(this.state.dim/2))
         {   return ;
         }
         this.move({
@@ -240,7 +241,7 @@ export default class XRay extends Component{
             });
     }
     onTopPress = () =>{
-        if(this.state.centerY+Math.round(this.state.height/2)<=0)
+        if(this.state.centerY+Math.round(this.state.dim/2)<=0)
         {   return ;
         }
         this.move({
@@ -249,7 +250,7 @@ export default class XRay extends Component{
             });
     }
     onBottomPress = () =>{
-        if(this.state.centerY >=Math.round(this.state.height/2))
+        if(this.state.centerX >=Math.round(this.state.height)+Math.round(this.state.dim/2))
         {   return ;
         }
         this.move({
@@ -281,6 +282,7 @@ export default class XRay extends Component{
                 <img
                     ref={(img)=>{
                         this.firstImg = img;
+                        console.log('firstImg is accesable');
                         //console.log("image1");
                         //if(img!=null)
                         // {console.log(this.firstImg.style.top);
@@ -317,7 +319,7 @@ export default class XRay extends Component{
                         />
                     </div>
                 </div>
-                <div className="x-ray-sensor" style={sensor} onMouseMove={this.move}></div>
+                {/* <div className="x-ray-sensor" style={sensor} onMouseMove={this.move}></div> */}
             </div>
             <div className="Buttons">
                 <Button clicked={this.onLeftPress}>Left</Button>
