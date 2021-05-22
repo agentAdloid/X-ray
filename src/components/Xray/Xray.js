@@ -83,7 +83,8 @@ export default class XRay extends Component{
         let naturalWidth = this.firstImg.naturalWidth;
         let naturalHeight = this.firstImg.naturalHeight;
         let percent = naturalWidth / naturalHeight;
-        percent = 1.61;
+        if(naturalHeight===0)
+            percent = 1.61;
         let width = this.firstImg.clientWidth;
         let height = Math.round((width / percent));
         let dim = this.getDiameter();
@@ -223,7 +224,7 @@ export default class XRay extends Component{
         this.HoverSensor(event);
     };
     onLeftPress = () =>{
-        if(this.state.centerX+Math.round(this.state.dim/2)<=0)
+        if(this.state.centerX-Math.round(this.state.dim/2)<=0)
         {   return ;
         }
         this.move({
@@ -241,7 +242,7 @@ export default class XRay extends Component{
             });
     }
     onTopPress = () =>{
-        if(this.state.centerY+Math.round(this.state.dim/2)<=0)
+        if(this.state.centerY-Math.round(this.state.dim/2)<=0)
         {   return ;
         }
         this.move({
@@ -250,13 +251,13 @@ export default class XRay extends Component{
             });
     }
     onBottomPress = () =>{
-        if(this.state.centerX >=Math.round(this.state.height)+Math.round(this.state.dim/2))
+        if(this.state.centerY >=Math.round(this.state.height)+Math.round(this.state.dim/2))
         {   return ;
         }
         this.move({
             layerX:this.state.centerX,
             layerY:this.state.centerY+10
-            });
+                    });
     }
     render(){
         let {
@@ -282,7 +283,10 @@ export default class XRay extends Component{
                 <img
                     ref={(img)=>{
                         this.firstImg = img;
-                        console.log('firstImg is accesable');
+                        if(img!=null)
+                        {   console.log(img.naturalHeight + ", " + img.naturalWidth + ',' +img.width);
+                            console.log('firstImg is accesable');
+                        }
                         //console.log("image1");
                         //if(img!=null)
                         // {console.log(this.firstImg.style.top);
